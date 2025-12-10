@@ -209,7 +209,7 @@ function App() {
       {/* Content */}
       <main className="px-4 py-6">
         <div className="max-w-4xl mx-auto">
-          <div className={`p-6 rounded-xl min-h-[60vh] whitespace-pre-wrap leading-relaxed ${darkMode ? 'bg-gray-800' : 'bg-white shadow-sm'}`}>
+          <div className={`p-8 rounded-xl min-h-[60vh] whitespace-pre-wrap leading-loose text-center text-xl md:text-2xl lg:text-3xl ${darkMode ? 'bg-gray-800' : 'bg-white shadow-sm'}`}>
             {currentContent}
           </div>
         </div>
