@@ -1,10 +1,30 @@
 import { useState, useEffect } from 'react'
 
+// Bionic reading: bold the first portion of each word
+function toBionic(text) {
+  return text.split(/(\s+)/).map((segment, i) => {
+    // If it's whitespace, return as-is
+    if (/^\s+$/.test(segment)) {
+      return segment
+    }
+    // For words, bold the first ~40% of letters
+    const boldLength = Math.ceil(segment.length * 0.4)
+    const boldPart = segment.slice(0, boldLength)
+    const normalPart = segment.slice(boldLength)
+    return (
+      <span key={i}>
+        <strong>{boldPart}</strong>{normalPart}
+      </span>
+    )
+  })
+}
+
 function App() {
   const [bookData, setBookData] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [bookmarks, setBookmarks] = useState([])
   const [darkMode, setDarkMode] = useState(false)
+  const [bionicMode, setBionicMode] = useState(true)
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [showSearch, setShowSearch] = useState(false)
@@ -26,9 +46,17 @@ function App() {
     const savedDark = localStorage.getItem('darkMode')
     if (savedDark) setDarkMode(JSON.parse(savedDark))
 
+    const savedBionic = localStorage.getItem('bionicMode')
+    if (savedBionic !== null) setBionicMode(JSON.parse(savedBionic))
+
     const savedPage = localStorage.getItem('currentPage')
     if (savedPage) setCurrentPage(JSON.parse(savedPage))
   }, [])
+
+  // Auto-scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' })
+  }, [currentPage])
 
   // Save bookmarks to localStorage
   useEffect(() => {
@@ -39,6 +67,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode))
   }, [darkMode])
+
+  // Save bionic mode preference
+  useEffect(() => {
+    localStorage.setItem('bionicMode', JSON.stringify(bionicMode))
+  }, [bionicMode])
 
   // Save current page
   useEffect(() => {
@@ -119,6 +152,16 @@ function App() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
               </svg>
+            </button>
+
+            {/* Bionic reading toggle */}
+            <button
+              onClick={() => setBionicMode(!bionicMode)}
+              className={`p-2 rounded-lg font-bold text-sm ${bionicMode ? 'bg-blue-600 text-white' : ''} ${darkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'}`}
+              aria-label="Toggle bionic reading"
+              title="Bionic Reading"
+            >
+              <span className="w-5 h-5 flex items-center justify-center"><strong>B</strong>io</span>
             </button>
 
             {/* Dark mode toggle */}
@@ -210,7 +253,7 @@ function App() {
       <main className="px-4 py-6">
         <div className="max-w-4xl mx-auto">
           <div className={`p-8 rounded-xl min-h-[60vh] whitespace-pre-wrap leading-loose text-center text-xl md:text-2xl lg:text-3xl ${darkMode ? 'bg-gray-800' : 'bg-white shadow-sm'}`}>
-            {currentContent}
+            {bionicMode ? toBionic(currentContent) : currentContent}
           </div>
         </div>
       </main>
