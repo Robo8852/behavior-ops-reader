@@ -110,14 +110,25 @@ export function ChatBar({ darkMode, currentPage, pageContent, bookTitle }) {
       {/* Input bar */}
       <div className="px-4 py-2">
         <form onSubmit={handleSubmit} className="max-w-4xl mx-auto flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={isRecording ? 'Listening...' : 'Ask about this page...'}
-            disabled={isLoading}
-            className={`flex-1 px-3 py-2 rounded-lg border text-sm ${inputBg} disabled:opacity-50`}
-          />
+          {/* Chat toggle button */}
+          {messages.length > 0 && (
+            <button
+              type="button"
+              onClick={() => setIsExpanded(!isExpanded)}
+              className={`p-2 rounded-lg transition-colors ${
+                isExpanded
+                  ? 'bg-blue-500 text-white'
+                  : darkMode
+                    ? 'hover:bg-gray-700'
+                    : 'hover:bg-gray-100'
+              }`}
+              aria-label={isExpanded ? 'Hide chat' : 'Show chat'}
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+              </svg>
+            </button>
+          )}
 
           {/* Mic button */}
           {isSupported && (
@@ -140,29 +151,30 @@ export function ChatBar({ darkMode, currentPage, pageContent, bookTitle }) {
             </button>
           )}
 
-          {/* Send button */}
-          <button
-            type="submit"
-            disabled={!input.trim() || isLoading}
-            className="p-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Send"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-            </svg>
-          </button>
+          {/* Input with send button inside */}
+          <div className={`flex-1 flex items-center rounded-lg border ${inputBg}`}>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder={isRecording ? 'Listening...' : 'Ask about this page...'}
+              disabled={isLoading}
+              className={`flex-1 px-3 py-2 text-sm bg-transparent border-none outline-none disabled:opacity-50`}
+            />
+            <button
+              type="submit"
+              disabled={!input.trim() || isLoading}
+              className="p-2 mr-1 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Send"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
+            </button>
+          </div>
         </form>
       </div>
 
-      {/* Collapse button when expanded */}
-      {isExpanded && (
-        <button
-          onClick={() => setIsExpanded(false)}
-          className={`w-full py-1 text-xs opacity-50 hover:opacity-100 ${borderColor} border-t`}
-        >
-          Hide chat
-        </button>
-      )}
     </div>
   )
 }
